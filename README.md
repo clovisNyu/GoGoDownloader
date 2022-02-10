@@ -67,6 +67,6 @@ To use the CLI, go to the folder container the source code from a terminal and u
 - https://gogoanime.film/category/kono-subarashii-sekai-ni-shukufuku-wo- >> kono-subarashii-sekai-ni-shukufuku-wo-
 
 ##### CLI
-- `python GoGoAdhoc https://gogoanime.film/category/leadale-no-daichi-nite --archive test --quality 1080`
+- `python GoGoAdhoc "https://gogoanime.film/category/leadale-no-daichi-nite" --archive test --quality 1080`
 
 The above code will find all episodes for the anime "Leadale no Daichi Nite" and check against the local file "test" (if it exists) to see which episodes have already been downloaded. It will then download all episodes that have not been downloaded at 1080p and then add the successfully downloaded episodes to the archive file "test"
