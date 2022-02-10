@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from colorama import Fore
 from parfive import Downloader
 from threading import Semaphore
+import asyncio
 
 
 OK = f"{Fore.RESET}[{Fore.GREEN}+{Fore.RESET}] "
@@ -123,9 +124,22 @@ class gogoanime:
 
         soup = BeautifulSoup(page.content, "html.parser")
 
+        all_qualities = ["360", "480", "720", "1080"]
+        found_links = []
+
         for link in soup.find_all("a", href=True):
             if self.episode_quality in link.text:
                 return link["href"]
+            for q in all_qualities:
+                if q in link.text:
+                    found_links.append((int(q),link["href"]))
+        
+        if found_links:
+            print("Requested quality not found. Defaulting to highest available quality")
+            found_links.sort()
+            return found_links[0][1]
+                
+        print(f"No Link Found from {url}")
 
     def file_downloader(self, file_list: dict):
         dl = Downloader(
@@ -147,12 +161,14 @@ class gogoanime:
         )
 
         for link in file_list:
+            title, ep_num = file_list[link]
             dl.enqueue_file(
                 link,
-                path=f"./{self.title}",
+                path=f"./{title}",
+                filename=f"{title} Episode {ep_num}.mp4"
             )
-
-        files = dl.download()
+        loop = asyncio.get_event_loop()
+        files = loop.run_until_complete(dl.run_download(timeouts={"total": None, "sock_read": None}))
         return files
 
 
